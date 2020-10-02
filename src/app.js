@@ -1,14 +1,18 @@
-const http = require('http');
+const express = require('express')
+const csvtojson = require('csvtojson')
 
-const hostname = '127.0.0.1';
-const port = 8080;
+const app = express()
+const port = 8080
+const csvFilePath = './data/covid_statistics.csv'
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
+let covidCasesData
+const retrieveCovidData = async () => csvtojson({ ignoreEmpty: true }).fromFile(csvFilePath)
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+app.get('/', async (req, res) => {
+  covidCasesData = covidCasesData || await retrieveCovidData()
+  res.json(covidCasesData)
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`)
+})
