@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Back-end repository of the beautiful, dark-mode friendly dashboard that shows up-to-date COVID-19 statistics",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dolevp/covidash-server.git"
+  },
+  "author": "Dolev Pearl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dolevp/covidash-server/issues"
+  },
+  "homepage": "https://github.com/dolevp/covidash-server#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
