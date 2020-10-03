@@ -8,7 +8,8 @@ module.exports = {
       covidStatistics = covidStatistics || await statisticsService.getCovidStatistics()
       return res.status(200).json({ status: 200, data: covidStatistics, message: 'Successfully retrieved covid-19 data' })
     } catch (e) {
-      const status = e.status || 500
+      const status = e.response?.status || 500
+      covidStatistics = undefined
       return res.status(status).json({ status, message: e.message })
     }
   },
