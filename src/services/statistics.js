@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const constants = require('../constants')
+const logging = require('../utils/logging')
 const fileUtils = require('../utils/files')
 const numberUtils = require('../utils/numbers')
 
@@ -35,6 +36,7 @@ const mergeStatisticsByCountry = (countryStatsList) => {
 
 module.exports = {
   getCovidStatistics: async () => {
+    logging.log('Getting COVID-19 statistics')
     const allStatistics = {}
     const dataURLByCategory = constants.covidTimeSeriesURLs.global
 
