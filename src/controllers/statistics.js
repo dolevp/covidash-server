@@ -4,7 +4,7 @@ const statisticsService = require('../services/statistics')
 
 let covidStatistics
 
-const updateStatisticsJob = new CronJob('9 * * * *', (async () => {
+const updateStatisticsJob = new CronJob('0 * * * *', (async () => {
   logging.log('Auto-updating COVID-19 statistics...')
   covidStatistics = await statisticsService.getCovidStatistics()
 }), null, true)
