@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/dolevp/covidash-server#readme",
   "dependencies": {
+    "axios": "^0.20.0",
     "csvtojson": "^2.0.10",
     "express": "^4.17.1"
   },
