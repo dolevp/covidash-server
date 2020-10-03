@@ -5,6 +5,6 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use('/', statisticsRouter)
+app.use('/statistics', statisticsRouter)
 
 module.exports = app

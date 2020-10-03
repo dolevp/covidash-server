@@ -1,38 +1,49 @@
-const axios = require('axios')
-const csvtojson = require('csvtojson')
+const _ = require('lodash')
 const constants = require('../constants')
-const dateHelper = require('../utils/dates')
-const errors = require('../errors')
+const fileUtils = require('../utils/files')
+const numberUtils = require('../utils/numbers')
 
-const { DataTooOldError } = errors
+const { getJSONFromCSVURL } = fileUtils
 
-const handleDataFile404 = (startDate, daysAgo) => {
-  if (daysAgo < 4) {
-    // Get data from 1 day before
-    console.warn('Failed to fetch data from today, trying to get older data if available')
-    return module.exports.getCovidStatistics(startDate, daysAgo + 1)
-  }
-  throw new DataTooOldError(daysAgo)
+const mergeStatisticsByCountry = (countryStatsList) => {
+  /**
+   * Aggregates all the relevant data from the given JSON array and sums the case numbers, kind
+   * of like a group-by & sum SQL statement.
+   *
+   * e.g [{ "Country/Region": "Australia", "State/Province": "A", "1/1/2020": 5 },
+   *      { "Country/Region": "Australia", "State/Province": "B", "1/1/2020": 8 }]
+   *
+   * => { "Australia": { "1/1/2020": 13 } }
+   */
+  const countryStatResults = {}
+  countryStatsList.forEach((countryObj) => {
+    const countryOrRegion = countryObj['Country/Region']
+    const relevantCountryStats = _.reject(Object.keys(countryObj),
+      (stat) => constants.irrelevantCountryStatsData.includes(stat))
+
+    relevantCountryStats.forEach((stat) => {
+      countryStatResults[countryOrRegion] = countryStatResults[countryOrRegion] || {}
+      countryStatResults[countryOrRegion][stat] = numberUtils.addUndefinableNumbers(
+        countryStatResults[countryOrRegion][stat],
+        countryObj[stat],
+      )
+    })
+  })
+
+  return countryStatResults
 }
 
 module.exports = {
-  getCovidStatistics: async (startDate, daysAgo = 0) => {
-    startDate.setUTCDate(startDate.getUTCDate() - daysAgo)
-    const { month, day, year } = dateHelper.formatDate(startDate)
-    const url = `${constants.covidStatisticsGithubRepositoryURL}/${month}-${day}-${year}.csv`
-    try {
-      const response = await axios({
-        url,
-        method: 'GET',
-      })
-      return csvtojson({ ignoreEmpty: true })
-        .fromString(response.data)
-    } catch (e) {
-      if (e.response?.status === 404) {
-        e.status = e.response.status
-        return handleDataFile404(startDate, daysAgo)
-      }
-      throw e
+  getCovidStatistics: async () => {
+    const allStatistics = {}
+    const dataURLByCategory = constants.covidTimeSeriesURLs.global
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const [categoryName, categoryURL] of Object.entries(dataURLByCategory)) {
+      const categoryJSON = await getJSONFromCSVURL(categoryURL)
+      allStatistics[categoryName] = mergeStatisticsByCountry(categoryJSON)
     }
+
+    return allStatistics
   },
 }
