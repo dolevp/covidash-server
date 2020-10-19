@@ -16,9 +16,9 @@ const mergeStatisticsByCountry = (countryStatsList) => {
    *
    * => { "Australia": { "1/1/2020": 13 } }
    */
-  const countryStatResults = {}
+  const countryStatResults = { Global: {} }
   countryStatsList.forEach((countryObj) => {
-    const countryOrRegion = countryObj['Country/Region']
+    const countryOrRegion = countryObj['Country/Region'] === 'US' ? 'United States' : countryObj['Country/Region']
     const relevantCountryStats = _.reject(Object.keys(countryObj),
       (stat) => constants.irrelevantCountryStatsData.includes(stat))
 
@@ -26,6 +26,10 @@ const mergeStatisticsByCountry = (countryStatsList) => {
       countryStatResults[countryOrRegion] = countryStatResults[countryOrRegion] || {}
       countryStatResults[countryOrRegion][stat] = numberUtils.addUndefinableNumbers(
         countryStatResults[countryOrRegion][stat],
+        countryObj[stat],
+      )
+      countryStatResults.Global[stat] = numberUtils.addUndefinableNumbers(
+        countryStatResults.Global[stat],
         countryObj[stat],
       )
     })

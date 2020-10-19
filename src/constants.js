@@ -8,7 +8,7 @@ module.exports = {
   },
   irrelevantCountryStatsData: [
     'Country/Region',
-    'State/Province',
+    'Province/State',
     'Lat',
     'Long',
   ],
